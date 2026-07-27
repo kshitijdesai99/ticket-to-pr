@@ -1,37 +1,45 @@
 ---
 name: ticket-to-pr
-description: Take an engineering ticket through repository investigation, an approved implementation plan, coding, verification, self-review, and pull request creation. Use when the user explicitly asks for an end-to-end ticket-to-PR workflow or wants controlled approval before implementation and publishing; do not trigger for ordinary standalone coding requests that do not ask for this workflow.
+description: Take an engineering ticket through evidence-first repository investigation, an approved implementation plan, coding, verification, self-review, pull request creation, and optional knowledge capture. Use when the user explicitly asks for an end-to-end ticket-to-PR workflow or wants controlled approval before implementation and publishing; do not trigger for ordinary standalone coding requests that do not ask for this workflow.
 license: MIT
 ---
 
 # Ticket to PR
 
-Move a ticket to a pull request with evidence, tight scope, and two meaningful approval gates.
+Move a ticket to a pull request with evidence, tight scope, and approval at every decision that is expensive to undo.
 
 ## Default workflow
 
-Use four phases:
+Use six phases:
 
-1. **Understand and plan** — read-only investigation followed by approval to edit.
-2. **Implement and validate** — branch, edit, test, and self-review without artificial pauses.
-3. **PR preview** — present the verified change and request approval to publish.
-4. **Publish** — commit the approved diff, push, and create the PR.
+1. **Investigate** — read-only evidence gathering. Ends in approval of the diagnosis.
+2. **Plan** — design the change against the approved diagnosis. Ends in approval to edit.
+3. **Implement and validate** — branch, edit, test, and self-review without artificial pauses.
+4. **PR preview** — present the verified change. Ends in approval to publish.
+5. **Publish** — commit the approved diff, push, and create the PR.
+6. **Optional retrospective** — opt-in capture of durable repository knowledge.
 
 Open each progress report with `## Phase N — <name>` so the current position remains clear across sessions or handovers.
 
-In the default mode, pause only at the end of Phases 1 and 3, or when a blocker or scope-control trigger requires a decision.
+Pause at the end of Phases 1, 2, and 4, and whenever a blocker or scope-control trigger requires a decision. Phase 3 runs to completion without intermediate approval prompts. Phase 6 runs only if the user opts in.
 
 Treat `approved`, `continue`, `next`, `yes`, `yep`, and `ok` as approval only when they clearly answer the active gate. If the same message materially changes the requested scope, update the proposal and request approval again.
 
+### Why investigation is gated separately
+
+A plan built on a wrong diagnosis is wasted work, and a confident wrong diagnosis is the hardest kind to catch. Presenting evidence before design gives the user the cheapest possible moment to redirect.
+
+Never present an implementation plan in Phase 1, even when the root cause looks obvious.
+
 ### Strict mode
 
-When the user asks for `strict mode`, strict approval, or fully staged approval, also pause at the end of Phase 2 and wait before preparing the PR preview.
+When the user asks for `strict mode`, strict approval, or fully staged approval, also pause at the end of Phase 3 and wait before preparing the PR preview.
 
 Announce that strict mode is active and which gates apply. Never select it yourself and never infer it from the size of the ticket.
 
-## Phase 1 — Understand and plan
+## Phase 1 — Investigate
 
-Do not modify files, create a branch, or commit during this phase.
+Do not modify files, create a branch, or commit during this phase. Do not design the implementation.
 
 ### Establish the baseline
 
@@ -49,25 +57,55 @@ Do not modify files, create a branch, or commit during this phase.
 - Separate the likely root cause from symptoms, unrelated weaknesses, and optional improvements.
 - State uncertainty plainly when reproduction or confirmation is blocked.
 
-### Stop instead of planning
+### Report the investigation
 
-Propose a plan only when the diagnosis is settled and the requirements are clear enough to scope. Ask one focused question instead of proposing a plan when:
+```markdown
+## Phase 1 — Investigate
 
-- the evidence contradicts the ticket
-- more than one root cause remains plausible on the available evidence
-- reproduction is blocked in a way that leaves the root cause unconfirmed
-- a material ambiguity would change scope, architecture, data model, API behaviour, backward compatibility, or acceptance criteria
+### Requirements
+Requested behaviour, acceptance criteria, constraints, non-goals.
 
-Report the diagnosis and any competing possibilities with the evidence for and against each, then ask the user to confirm the direction. Do not resolve one of these conditions by silently choosing the most likely option and planning around it.
+### Evidence
+What was run or inspected, actual result, expected result.
 
-Minor ambiguity does not justify stopping. State the assumption, continue, and list it in the report.
+### Code path
+1. `path/to/file.py:function_name` — role in the flow
+2. `path/to/other.py:function_name` — role in the flow
 
-### Propose the implementation
+### Data trace
+Input → transformation → validation → failing boundary → output
 
-Present one concise report containing:
+### Likely root cause
+...
 
-- confirmed requirements and remaining assumptions
-- evidence and likely root cause
+### Smallest possible fix
+The narrowest change that appears sufficient, in one or two sentences.
+
+### Separate improvements
+Optional improvements and technical debt not required for the fix.
+
+### Assumptions and open questions
+...
+```
+
+Describing the smallest likely fix is required. Designing the implementation is not allowed here — no file lists, test plans, commands, branch names, or step sequences.
+
+### Uncertainty
+
+When several root causes remain plausible, list each with the evidence for and against it and do not choose one. When reproduction is blocked, say what prevented it, give code-level evidence separately, and state what remains unverified. When the evidence contradicts the ticket, report the conflict and ask the user to confirm the intended behaviour.
+
+Minor ambiguity does not justify stalling. State the assumption and list it in the report.
+
+### Gate
+
+End with: `Does this investigation look correct before I create an implementation plan?`
+
+## Phase 2 — Plan
+
+After the diagnosis is approved. Still do not modify files, create a branch, or commit.
+
+Present one concise plan containing:
+
 - required files and logic changes
 - tests to add or update
 - validation commands sourced from CI first, then task runners and repository documentation
@@ -75,9 +113,11 @@ Present one concise report containing:
 - risks, rollback or compatibility concerns when relevant
 - optional and out-of-scope work
 
+Build the plan on the approved diagnosis. If planning surfaces evidence that undermines it, return to Phase 1 rather than quietly revising the root cause inside the plan.
+
 End with one approval question authorizing the proposed implementation. Do not implement until the user approves.
 
-## Phase 2 — Implement and validate
+## Phase 3 — Implement and validate
 
 After approval:
 
@@ -96,7 +136,7 @@ Do not commit, push, or create the PR yet. If strict mode is active, report the 
 - If a check is unavailable, state why, what remains unverified, and the exact command the user can run.
 - Do not weaken or delete a valid test merely to obtain a passing result.
 
-## Phase 3 — PR preview
+## Phase 4 — PR preview
 
 Prefer the repository's PR template in this order:
 
@@ -121,7 +161,7 @@ Do not claim the ticket is resolved if material limitations remain. Do not commi
 
 End with one question asking approval to commit the displayed changes, push the branch, and create the PR.
 
-## Phase 4 — Publish
+## Phase 5 — Publish
 
 After approval:
 
@@ -134,7 +174,45 @@ After approval:
 
 If a required tool or permission is unavailable, provide exact manual commands and clearly state what was not completed. Do not merge, force-push, bypass checks, or modify a protected branch unless the user separately requests and authorizes it.
 
-The PR completes the workflow. If the work revealed durable repository knowledge, mention the documentation opportunity briefly; update documentation only if the user explicitly asks. Do not turn ticket history, speculative conclusions, logs, secrets, personal data, or already-documented facts into permanent repository documentation.
+The PR completes the core workflow.
+
+## Phase 6 — Optional retrospective
+
+Optional. It must never block, delay, or reopen the finished PR.
+
+### Opt-in
+
+After the PR exists, ask: `Would you like me to review what we learned and propose any durable repository documentation updates?`
+
+If the user declines, state that the workflow is complete and stop. Create and modify nothing.
+
+### Propose before writing
+
+Capture only knowledge that is verified by this ticket's evidence, useful beyond it, and belongs in version control. Good candidates are the canonical module that owns a behaviour, a verified but non-obvious data flow, the correct command for targeted tests, a repository-specific convention, or a recurring integration constraint.
+
+Do not persist ticket chronology, conversation summaries, speculative conclusions, raw logs, one-off failures, secrets, personal data, or facts already documented accurately elsewhere.
+
+Prefer updating an existing canonical document such as `AGENTS.md`, `CLAUDE.md`, `README.md`, or a file under `docs/`. Create a new file only when no suitable one exists.
+
+Present each candidate as knowledge, evidence, proposed destination, and reason:
+
+```text
+Knowledge:   DOB parsing is centralised in app/workflow/capture_dob.py.
+Evidence:    Traced in Phase 1; API schemas validate shape only.
+Destination: docs/architecture.md, under "Input validation".
+Reason:      Future date-format tickets should change the central parser,
+             not individual API handlers.
+```
+
+Also list what you deliberately excluded and why.
+
+End with: `Do you approve these documentation changes?`
+
+Do not edit any file before this approval.
+
+### After approval
+
+Write only the approved changes, integrating them into existing sections and matching the surrounding style. Do not modify production code in this phase. Then show the documentation diff and confirm that every statement is evidence-backed, no sensitive data was added, paths and commands are accurate, and no unrelated files changed.
 
 ## Scope control
 

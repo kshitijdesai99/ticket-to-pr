@@ -2,37 +2,46 @@
 
 A lightweight agent skill for taking an engineering ticket through investigation, implementation, verification, review, and pull request creation.
 
-The workflow keeps two meaningful human approval gates:
+The workflow keeps three human approval gates, one for each decision that is expensive to undo:
 
-1. approve the evidence-backed implementation plan before files change
-2. approve the verified diff and PR draft before it is committed and published
+1. approve the diagnosis before any plan is designed around it
+2. approve the implementation plan before any file changes
+3. approve the verified diff and PR draft before it is committed and published
 
-Implementation, testing, and self-review run together without approval prompts between mechanical steps. The skill pauses again only for a blocker, a material scope change, or an unsettled diagnosis.
+Implementation, testing, and self-review run together without approval prompts between mechanical steps. The skill pauses again only for a blocker or a material scope change.
 
 ## Workflow
 
 ```text
-Understand and plan
+Investigate
+        ↓ approval of the diagnosis
+Plan
         ↓ approval to edit
 Implement and validate
         ↓ automatic continuation
 PR preview
         ↓ approval to publish
 Publish PR
+        ↓ opt-in
+Optional retrospective
 ```
+
+Investigation is gated separately from planning on purpose. A plan built on a wrong diagnosis is wasted work, and a confidently wrong diagnosis is the hardest kind to catch — so the evidence is shown before any design is done around it.
+
+After the PR is created, the skill offers an optional retrospective that proposes durable repository documentation and asks for approval before writing anything.
 
 For teams that require more checkpoints, explicitly request `strict mode`; it adds an approval after implementation and validation.
 
 ## Principles
 
-- Investigate before proposing changes.
-- Confirm the diagnosis before planning when the evidence is contradictory or inconclusive.
+- Confirm the diagnosis with evidence before designing anything.
 - Preserve pre-existing work and repository conventions.
 - Keep changes within the approved scope.
 - Never claim an unrun check passed.
 - Review the complete diff before publishing.
 - Never push or create a PR before approval.
 - Never merge or force-push unless separately requested.
+- Never write documentation from a retrospective without approval.
 
 ## Structure
 
