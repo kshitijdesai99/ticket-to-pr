@@ -1,103 +1,151 @@
 ---
 name: ticket-to-pr
-description: Guides software engineering work from an issue or ticket through requirements clarification, repository investigation, implementation planning, coding, verification, self-review, pull request creation, and optional post-PR knowledge capture. Use when the user asks to implement a ticket, fix an issue, build a feature, take engineering work from ticket to PR, or preserve reusable repository knowledge discovered during the work.
+description: Take an engineering ticket through repository investigation, an approved implementation plan, coding, verification, self-review, and pull request creation. Use when the user explicitly asks for an end-to-end ticket-to-PR workflow or wants controlled approval before implementation and publishing; do not trigger for ordinary standalone coding requests that do not ask for this workflow.
+license: MIT
 ---
 
 # Ticket to PR
 
-Guide engineering work through a controlled, human-approved workflow.
+Move a ticket to a pull request with evidence, tight scope, and two meaningful approval gates.
 
-## Core rule
+## Default workflow
 
-Never move to the next stage without explicit user approval.
+Use four phases:
 
-Valid approval signals include `approved`, `continue`, `next`, `yes`, `yep`, and `ok` when they clearly answer the current approval question.
+1. **Understand and plan** — read-only investigation followed by approval to edit.
+2. **Implement and validate** — branch, edit, test, and self-review without artificial pauses.
+3. **PR preview** — present the verified change and request approval to publish.
+4. **Publish** — commit the approved diff, push, and create the PR.
 
-If the user provides corrections, questions, or new constraints, remain in the current stage, update the work, and ask for approval again.
+Open each progress report with `## Phase N — <name>` so the current position remains clear across sessions or handovers.
 
-Do not interpret silence as approval.
+In the default mode, pause only at the end of Phases 1 and 3, or when a blocker or scope-control trigger requires a decision.
 
-## Workflow
+Treat `approved`, `continue`, `next`, `yes`, `yep`, and `ok` as approval only when they clearly answer the active gate. If the same message materially changes the requested scope, update the proposal and request approval again.
 
-Follow these stages in order:
+### Strict mode
 
-1. Ticket intake
-2. Requirements confirmation
-3. Codebase investigation
-4. Implementation plan
-5. Implementation
-6. Verification
-7. Self-review
-8. PR draft
-9. PR creation
-10. Optional retrospective and repository knowledge capture
+When the user asks for `strict mode`, strict approval, or fully staged approval, also pause at the end of Phase 2 and wait before preparing the PR preview.
 
-Read `references/workflow-stages.md` before starting and follow the instructions for the current stage only.
+Announce that strict mode is active and which gates apply. Never select it yourself and never infer it from the size of the ticket.
 
-Stage 10 is optional and does not block PR completion. Never create or update repository documentation for the retrospective unless the user explicitly opts in and approves the proposed file changes.
+## Phase 1 — Understand and plan
 
-## Interaction protocol
+Do not modify files, create a branch, or commit during this phase.
 
-At every stage:
+### Establish the baseline
 
-1. Perform only the work allowed in that stage.
-2. Present the result clearly.
-3. Surface assumptions, risks, and unresolved questions.
-4. Ask exactly one low-effort approval question.
-5. Stop and wait for the user's response.
+- Read the ticket and linked context.
+- Check the current branch, base branch, working-tree state, and remotes.
+- Report pre-existing changes and preserve them.
+- Read repository instructions and conventions such as `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`, CI configuration, task runners, and the repository PR template.
 
-Do not perform hidden implementation work while waiting for approval.
+### Investigate with evidence
+
+- Restate the requested behaviour, acceptance criteria, constraints, and non-goals.
+- Reproduce or confirm the problem when practical. Record the command, input, output, test, log, or code evidence used.
+- Trace the relevant path from entry point to observable result, including validation, transformations, persistence or external services, and existing tests.
+- Identify the smallest boundary where expected and actual behaviour diverge.
+- Separate the likely root cause from symptoms, unrelated weaknesses, and optional improvements.
+- State uncertainty plainly when reproduction or confirmation is blocked.
+
+### Stop instead of planning
+
+Propose a plan only when the diagnosis is settled and the requirements are clear enough to scope. Ask one focused question instead of proposing a plan when:
+
+- the evidence contradicts the ticket
+- more than one root cause remains plausible on the available evidence
+- reproduction is blocked in a way that leaves the root cause unconfirmed
+- a material ambiguity would change scope, architecture, data model, API behaviour, backward compatibility, or acceptance criteria
+
+Report the diagnosis and any competing possibilities with the evidence for and against each, then ask the user to confirm the direction. Do not resolve one of these conditions by silently choosing the most likely option and planning around it.
+
+Minor ambiguity does not justify stopping. State the assumption, continue, and list it in the report.
+
+### Propose the implementation
+
+Present one concise report containing:
+
+- confirmed requirements and remaining assumptions
+- evidence and likely root cause
+- required files and logic changes
+- tests to add or update
+- validation commands sourced from CI first, then task runners and repository documentation
+- branch name and relevant repository conventions
+- risks, rollback or compatibility concerns when relevant
+- optional and out-of-scope work
+
+End with one approval question authorizing the proposed implementation. Do not implement until the user approves.
+
+## Phase 2 — Implement and validate
+
+After approval:
+
+1. Recheck the branch and working tree. Create the approved feature branch before editing when appropriate. Never move, discard, reset, or include pre-existing user changes without approval.
+2. Make the smallest coherent change that satisfies the approved plan. Add or update tests alongside the code.
+3. Run targeted checks first, followed by the relevant broader CI checks. Record exact commands and results. Never describe an unrun check as passing.
+4. Read the complete diff and use `references/review-checklist.md`. Fix in-scope findings, rerun affected checks, and record the correction. Do not require another approval for corrections already covered by the plan.
+5. Leave unrelated improvements out of the diff.
+
+Do not commit, push, or create the PR yet. If strict mode is active, report the implementation and validation evidence and wait for approval before preparing the PR preview.
+
+### Failure handling
+
+- For an in-scope implementation or test failure, diagnose it, make the narrowest correction, and rerun the affected checks.
+- For a likely pre-existing failure, compare against the base branch when safe and report the evidence.
+- If a check is unavailable, state why, what remains unverified, and the exact command the user can run.
+- Do not weaken or delete a valid test merely to obtain a passing result.
+
+## Phase 3 — PR preview
+
+Prefer the repository's PR template in this order:
+
+1. `.github/pull_request_template.md`
+2. `.github/PULL_REQUEST_TEMPLATE/*.md`
+3. `docs/pull_request_template.md`
+4. `references/pr-template.md`
+
+Present:
+
+- changed files and behaviour
+- acceptance-criterion coverage
+- exact verification results, including failures, skipped checks, and unavailable checks
+- self-review findings and corrections
+- remaining risks or limitations
+- diff summary
+- proposed commit message
+- target branch, PR title, and complete PR description
+- the exact publish actions that will follow approval
+
+Do not claim the ticket is resolved if material limitations remain. Do not commit, push, or create the PR in this phase.
+
+End with one question asking approval to commit the displayed changes, push the branch, and create the PR.
+
+## Phase 4 — Publish
+
+After approval:
+
+1. Confirm the branch, base branch, remote, and working-tree contents again.
+2. Stage only the approved files. Do not include unrelated user changes.
+3. Commit using the approved message and repository convention.
+4. Push the feature branch without force.
+5. Create the PR using the approved title and body without silently rewriting them.
+6. Return the PR URL, commands performed, and observed CI state.
+
+If a required tool or permission is unavailable, provide exact manual commands and clearly state what was not completed. Do not merge, force-push, bypass checks, or modify a protected branch unless the user separately requests and authorizes it.
+
+The PR completes the workflow. If the work revealed durable repository knowledge, mention the documentation opportunity briefly; update documentation only if the user explicitly asks. Do not turn ticket history, speculative conclusions, logs, secrets, personal data, or already-documented facts into permanent repository documentation.
 
 ## Scope control
 
-The approved implementation plan defines the allowed implementation scope.
+Pause and request approval when new evidence requires a material departure from the approved plan, including:
 
-Stop and ask for approval when new information requires any of the following:
-
-- changing a public API
-- modifying a database schema
+- changing a public API or database schema
 - adding a dependency
-- changing authentication or permissions
+- changing authentication, authorization, or permissions
 - altering deployment infrastructure
 - expanding acceptance criteria
-- making a significant refactor
+- performing a significant refactor
 - modifying additional major components
 
-Explain what was discovered, why it matters, the available options, and the scope impact of each option.
-
-## Evidence rules
-
-Never claim a test, linter, formatter, type checker, build, or other check passed unless it was actually run and passed.
-
-Before creating a PR, require:
-
-- confirmed ticket understanding
-- repository investigation
-- approved implementation plan
-- changed-file summary
-- verification evidence
-- self-review findings
-- approved PR title and description
-
-Use `references/review-checklist.md` during self-review.
-Use `references/pr-template.md` when preparing the PR.
-Use `references/retrospective.md` only after PR creation and only when the user opts in.
-
-## Retrospective safeguards
-
-The retrospective captures reusable repository knowledge, not a narrative summary of the ticket.
-
-Only preserve findings that are:
-
-- supported by repository evidence or completed verification
-- useful across future tasks
-- appropriate for version-controlled documentation
-- unlikely to expose secrets, credentials, personal data, or sensitive operational details
-
-Prefer updating an existing canonical document over creating a new notes file. Do not write speculative conclusions, transient debugging output, duplicated documentation, or ticket-specific history into the repository.
-
-## Tool and permission limits
-
-If repository, Git, GitHub, or CI tools are unavailable, do not pretend the action was completed. Provide the exact commands or content the user needs and clearly identify what remains manual.
-
-Do not merge, force-push, bypass checks, or alter protected branches unless the user explicitly requests it and the available tools permit it.
+Explain the evidence, available options, recommendation, and scope impact. Minor implementation details and in-scope review corrections do not require another approval.

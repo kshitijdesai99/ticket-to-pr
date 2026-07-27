@@ -1,56 +1,27 @@
 # Pull Request Template
 
-## Title
-
-Use a concise, action-oriented title.
-
-Example:
-
-```text
-Accept DD-MM-YYYY date-of-birth input
-```
-
-## Description
+Use this only when the repository has no PR template.
 
 ```markdown
 ## Summary
 
-Explain what changed and why.
-
-## Ticket
-
-Closes: TICKET-ID
+Explain the verified change and why it was needed.
 
 ## Changes
 
 - Concrete change
-- Concrete change
 
 ## Verification
 
-- `command` — result
-- `command` — result
+- `command` — actual result
 
-## Risks
+## Risks and limitations
 
-- Risk or `None identified`
+- Risk, limitation, skipped check, or `None identified`
 
-## Known limitations
+## Ticket
 
-- Limitation or `None`
-
-## Rollout and rollback
-
-- Add when relevant
-
-## Screenshots or evidence
-
-Add only when relevant.
+Closes: TICKET-ID
 ```
 
-## Accuracy rules
-
-- Include only checks that were actually run.
-- Distinguish passed, failed, skipped, and unavailable checks.
-- Do not claim the ticket is fully resolved when known limitations remain.
-- Record user-approved skipped checks or accepted risks.
+Add rollout, rollback, migration, or screenshots only when relevant. Distinguish passed, failed, skipped, and unavailable checks; never list a check that was not run as passing.

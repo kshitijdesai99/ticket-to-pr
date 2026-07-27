@@ -1,45 +1,31 @@
 # Self-Review Checklist
 
-Review the completed diff for:
+Read the complete diff and check each relevant category. Report concrete findings; summarize categories with no finding instead of producing a verbose checklist transcript.
 
-## Requirements
-- Does the implementation match the ticket?
-- Were any acceptance criteria missed?
-- Were any assumptions left unresolved?
+## Requirements and correctness
 
-## Correctness
-- Are edge cases handled?
-- Are error paths correct?
-- Could the change create race conditions or inconsistent state?
-- Does the code preserve backward compatibility where required?
+- Does the change satisfy every acceptance criterion without expanding scope?
+- Are edge cases, error paths, state transitions, concurrency, and backward compatibility handled where relevant?
 
-## Security and privacy
-- Is input validated safely?
-- Are permissions or authentication affected?
-- Could sensitive data be logged or exposed?
+## Security, privacy, data, and infrastructure
 
-## Data and infrastructure
-- Is a migration required?
-- Are configuration, deployment, or rollback changes needed?
-- Are external dependencies handled safely?
+- Are inputs, authentication, authorization, secrets, and sensitive data handled safely?
+- Are migrations, configuration, deployment, rollback, or external-service changes required?
 
-## Performance
-- Could the change introduce extra queries, network calls, blocking work, memory growth, or latency?
+## Performance and reliability
 
-## Tests
-- Do tests verify behaviour rather than implementation details?
-- Are positive, negative, and regression cases covered?
-- Are any tests misleading, flaky, or too broad?
+- Does the change add unnecessary queries, calls, blocking work, memory growth, latency, retries, or failure modes?
 
-## Code quality
-- Are names and comments accurate?
-- Is dead or unrelated code included?
-- Does the change follow repository conventions?
-- Is documentation required?
+## Tests and maintainability
 
-## Finding severity
+- Do tests verify observable behaviour, including regression and failure cases?
+- Does the code follow repository conventions and avoid dead code, misleading comments, unrelated cleanup, and needless complexity?
+- Is user-facing or developer documentation required?
 
-- **Blocker:** Must be fixed before PR.
-- **Important:** Should be fixed before PR.
-- **Minor:** Optional improvement that does not block the PR.
-- **No finding:** Explicitly state when no issue was found in a category.
+## Severity
+
+- **Blocker:** must be corrected before PR creation.
+- **Important:** should be corrected before PR creation unless the user accepts the risk.
+- **Minor:** optional, in-scope polish.
+
+Fix findings already covered by the approved plan, rerun affected checks, and report both the finding and correction. Pause only when a correction would materially change scope or require a user decision.
