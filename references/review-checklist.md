@@ -10,6 +10,8 @@ Read the complete diff and check each relevant category. Report concrete finding
 ## Security, privacy, data, and infrastructure
 
 - Are inputs, authentication, authorization, secrets, and sensitive data handled safely?
+- Were repository scripts and documented commands inspected before execution?
+- Did any command use credentials, deploy or migrate data, modify an external system, incur cost, or perform a destructive operation without explicit approval?
 - Are migrations, configuration, deployment, rollback, or external-service changes required?
 
 ## Performance and reliability
@@ -19,7 +21,7 @@ Read the complete diff and check each relevant category. Report concrete finding
 ## Tests and maintainability
 
 - Do tests verify observable behaviour, including regression and failure cases?
-- Does every new or materially rewritten function or class have a short plain-language explanation and one concrete usage or input-to-output example?
+- Does documentation follow repository conventions and explain public, complex, or non-obvious behaviour without redundant inline examples?
 - Does the code follow repository conventions and avoid dead code, misleading comments, unrelated cleanup, and needless complexity?
 - Is user-facing or developer documentation required?
 

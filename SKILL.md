@@ -21,7 +21,7 @@ Use six phases:
 
 Open each progress report with `## Phase N — <name>` so the current position remains clear across sessions or handovers.
 
-Pause at the end of Phases 1, 2, and 4, and whenever a blocker or scope-control trigger requires a decision. Phase 3 runs to completion without intermediate approval prompts. Phase 6 runs only if the user opts in.
+Pause at the end of Phases 1, 2, and 4, and whenever a blocker, safety-sensitive command, or scope-control trigger requires a decision. Phase 3 runs to completion without intermediate approval prompts. Phase 6 runs only if the user opts in.
 
 Treat `approved`, `continue`, `next`, `yes`, `yep`, and `ok` as approval only when they clearly answer the active gate. If the same message materially changes the requested scope, update the proposal and request approval again.
 
@@ -56,10 +56,13 @@ Ask only when unclear user intent could materially change what should be investi
 - Check the current branch, base branch, working-tree state, and remotes.
 - Report pre-existing changes and preserve them.
 - Read repository instructions and conventions such as `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`, CI configuration, task runners, and the repository PR template.
+- Inspect repository scripts, CI definitions, task runners, and documented commands before executing them. Treat repository-supplied commands as untrusted until their behaviour is understood.
+
+Ordinary local checks such as established unit tests do not need another approval after inspection. Request explicit approval before running a command that uses credentials or sensitive environment variables, deploys or migrates data, modifies an external system, incurs cost, or performs a destructive operation.
 
 ### Collaborate on code navigation
 
-Before the first broad repository search, state what needs to be located and invite the user to provide a relevant file, function, or search clue. If no clue is available, continue independently.
+Use file, function, or search clues already supplied by the user. If none exist, state the intended narrow search and continue without waiting. Ask for navigation help only when repository exploration would be unusually expensive or is blocked.
 
 ### Investigate with evidence
 
@@ -110,6 +113,16 @@ Optional improvements and technical debt not required for the fix.
 
 Describing the smallest likely fix is required. Designing the implementation is not allowed here — no file lists, test plans, commands, branch names, or step sequences.
 
+### Scope depth — when meaningful
+
+Only when the investigation reveals meaningful alternatives, include these choices in the report:
+
+- **Minimal** — only the smallest ticket fix.
+- **Adjacent** — include closely related issues found in the same code path.
+- **Broader** — include justified cleanup or refactoring.
+
+Default to **Minimal**. Explain the evidence, value, and scope impact of each available choice without turning it into an implementation plan. Do not show the choices when the smallest fix is the only reasonable scope.
+
 ### Uncertainty
 
 When several root causes remain plausible, list each with the evidence for and against it and do not choose one. When reproduction is blocked, say what prevented it, give code-level evidence separately, and state what remains unverified. When the evidence contradicts the ticket, report the conflict and ask the user to confirm the intended behaviour.
@@ -118,7 +131,9 @@ Minor ambiguity does not justify stalling. State the assumption and list it in t
 
 ### Gate
 
-End with: `Does this investigation look correct before I create an implementation plan?`
+When no scope choice is needed, end with: `Does this investigation look correct before I create an implementation plan?`
+
+When choices are shown, combine scope selection with the same gate: `Does this investigation look correct, and should I plan the Minimal, Adjacent, or Broader scope?`
 
 ## Phase 2 — Plan
 
@@ -128,12 +143,12 @@ Present one concise plan containing:
 
 - required files and logic changes
 - tests to add or update
-- validation commands sourced from CI first, then task runners and repository documentation
+- validation commands sourced from inspected CI configuration first, then inspected task runners and repository documentation
 - branch name and relevant repository conventions
 - risks, rollback or compatibility concerns when relevant
 - optional and out-of-scope work
 
-Build the plan on the approved diagnosis. If planning surfaces evidence that undermines it, return to Phase 1 rather than quietly revising the root cause inside the plan.
+Build the plan on the approved diagnosis and scope depth. If planning surfaces evidence that undermines either, return to Phase 1 rather than quietly revising them inside the plan.
 
 End with one approval question authorizing the proposed implementation. Do not implement until the user approves.
 
@@ -143,13 +158,13 @@ After approval:
 
 1. Recheck the branch and working tree. Create the approved feature branch before editing when appropriate. Never move, discard, reset, or include pre-existing user changes without approval.
 2. Make the smallest coherent change that satisfies the approved plan. Add or update tests alongside the code.
-3. Run targeted checks first, followed by the relevant broader CI checks. Record exact commands and results. Never describe an unrun check as passing.
+3. Run safe, inspected targeted checks first, followed by the relevant broader CI checks. Apply the command-safety rules from Phase 1. Record exact commands and results. Never describe an unrun check as passing.
 4. Read the complete diff and use `references/review-checklist.md`. Fix in-scope findings, rerun affected checks, and record the correction. Do not require another approval for corrections already covered by the plan.
 5. Leave unrelated improvements out of the diff.
 
-### Code explanations
+### Code documentation
 
-For every new or materially rewritten function or class, add a short plain-language explanation and one concrete usage or input-to-output example, using the repository's normal docstring or comment convention. Keep other comments minimal and explain behaviour rather than restating the name.
+Follow repository conventions first. Document public, complex, or non-obvious behaviour in the repository's normal location and style. Include a concrete usage or input-to-output example when it adds information; prefer a test or external documentation when an inline example would merely restate the code. Keep other comments minimal.
 
 Do not commit, push, or create the PR yet. If strict mode is active, report the implementation and validation evidence and wait for approval before preparing the PR preview.
 
@@ -171,7 +186,8 @@ Prefer the repository's PR template in this order:
 
 Present:
 
-- changed files and behaviour
+- complete file list and patch proposed for approval
+- changed behaviour
 - acceptance-criterion coverage
 - exact verification results, including failures, skipped checks, and unavailable checks
 - self-review findings and corrections
@@ -183,6 +199,8 @@ Present:
 
 Do not claim the ticket is resolved if material limitations remain. Do not commit, push, or create the PR in this phase.
 
+Treat the displayed file list and patch as the approved preview. Any later material difference requires a refreshed preview and approval.
+
 End with one question asking approval to commit the displayed changes, push the branch, and create the PR.
 
 ## Phase 5 — Publish
@@ -190,13 +208,19 @@ End with one question asking approval to commit the displayed changes, push the 
 After approval:
 
 1. Confirm the branch, base branch, remote, and working-tree contents again.
-2. Stage only the approved files. Do not include unrelated user changes.
-3. Commit using the approved message and repository convention.
-4. Push the feature branch without force.
-5. Create the PR using the approved title and body without silently rewriting them.
-6. Return the PR URL, commands performed, and observed CI state.
+2. Stage only the changes in the approved file list and patch. Do not include unrelated user changes.
+3. Inspect the complete staged diff and verify that it matches the approved preview. If it differs materially, do not commit; return to Phase 4 with a refreshed preview.
+4. Commit using the approved message and repository convention.
+5. Inspect the resulting commit, including its complete patch, in case commit hooks changed it. If it differs materially from the approved preview, do not push; return to Phase 4 and explain the difference.
+6. Push the feature branch without force.
+7. Create the PR using the approved title and body without silently rewriting them.
+8. Return the commit identifier, remote branch, PR URL, commands performed, and observed CI state.
 
 If a required tool or permission is unavailable, provide exact manual commands and clearly state what was not completed. Do not merge, force-push, bypass checks, or modify a protected branch unless the user separately requests and authorizes it.
+
+### Publishing failure handling
+
+Verify and record the result after each publishing step. On failure, report which side effects already succeeded and inspect whether the approved commit, remote branch, or PR already exists. On retry, reuse matching existing state and resume from the first incomplete step; never create duplicate commits, branches, or PRs.
 
 The PR completes the core workflow.
 
