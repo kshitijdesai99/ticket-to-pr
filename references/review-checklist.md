@@ -19,6 +19,7 @@ Read the complete diff and check each relevant category. Report concrete finding
 ## Tests and maintainability
 
 - Do tests verify observable behaviour, including regression and failure cases?
+- Does every new or materially rewritten function or class have a short plain-language explanation and one concrete usage or input-to-output example?
 - Does the code follow repository conventions and avoid dead code, misleading comments, unrelated cleanup, and needless complexity?
 - Is user-facing or developer documentation required?
 

@@ -35,8 +35,11 @@ For teams that require more checkpoints, explicitly request `strict mode`; it ad
 ## Principles
 
 - Confirm the diagnosis with evidence before designing anything.
+- Align on the intended result before using repository tools and clarify only when a user decision matters.
+- Invite code-navigation clues before broad searches, then investigate independently when none are available.
 - Preserve pre-existing work and repository conventions.
 - Keep changes within the approved scope.
+- Explain every new or materially rewritten function or class in plain language with a concrete example.
 - Never claim an unrun check passed.
 - Review the complete diff before publishing.
 - Never push or create a PR before approval.
