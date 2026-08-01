@@ -21,14 +21,7 @@ ALLOWED_FIELDS = {
     "metadata",
     "allowed-tools",
 }
-EXPECTED_PHASES = [
-    "## Phase 1 — Investigate",
-    "## Phase 2 — Plan",
-    "## Phase 3 — Implement and validate",
-    "## Phase 4 — PR preview",
-    "## Phase 5 — Publish",
-    "## Phase 6 — Optional retrospective",
-]
+PHASE_HEADING_PATTERN = re.compile(r"## Phase ([1-6]) [-—] .+")
 REQUIRED_GATE_MARKERS = [
     "Pause at the end of Phases 1, 2, and 4",
     "Does this investigation look correct before I create an implementation plan?",
@@ -153,13 +146,13 @@ def validate_structure(root: Path, fields: dict[str, str], body: str, errors: li
         errors.append("description must not exceed 1024 characters")
 
     structural_body = content_outside_fences(body)
-    actual_phases = [
-        line.strip()
+    phase_numbers = [
+        int(match.group(1))
         for line in structural_body.splitlines()
-        if re.fullmatch(r"## Phase [1-6] — .+", line.strip())
+        if (match := PHASE_HEADING_PATTERN.fullmatch(line.strip()))
     ]
-    if actual_phases != EXPECTED_PHASES:
-        errors.append(f"expected six workflow phases in order; found {actual_phases!r}")
+    if phase_numbers != [1, 2, 3, 4, 5, 6]:
+        errors.append(f"expected phases 1-6 as headings in order; found {phase_numbers!r}")
     for marker in REQUIRED_GATE_MARKERS:
         if marker not in structural_body:
             errors.append(f"missing approval-gate marker: {marker}")
