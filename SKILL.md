@@ -79,6 +79,8 @@ Show scope choices only when meaningful:
 - **Adjacent** — closely related defects in the same path.
 - **Broader** — justified cleanup or refactoring.
 
+For every offered scope, explain its additional outcome, effort, and risk relative to Minimal so the user can choose confidently without turning the comparison into an implementation plan.
+
 When no scope choice is needed, end with: `Does this investigation look correct before I create an implementation plan?`
 
 Otherwise ask whether the investigation is correct and which scope to plan.
