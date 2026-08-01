@@ -34,6 +34,15 @@ Treat `approved`, `continue`, `next`, `yes`, `yep`, and `ok` as approval only wh
 - Pause when new evidence requires a public API or schema change, dependency, authentication or permission change, infrastructure change, expanded acceptance criteria, significant refactor, or another major component. Present the evidence, options, recommendation, and scope impact.
 - Do not merge, force-push, bypass checks, or modify a protected branch unless separately requested and authorized.
 
+## User-facing communication
+
+- Use plain, everyday language and short sentences. Explain any necessary technical term in one line.
+- Lead with the result or decision needed. Present analysis as conclusions and strongest evidence, not a reasoning transcript.
+- Keep routine reports to five bullets or fewer. Exceed this only when omission would hide a material risk, blocker, or scope change.
+- Show only what the user needs to understand or decide. Do not paste raw logs, full patches, or checklist transcripts unless the user asks; summarize them and make details available on request.
+- Ask one clear question at a time. State exactly what approval allows, use `yes/no` when possible, and put the recommended option first when a choice is required.
+- Do not repeat context, list empty sections, or use filler. Never trade brevity for accuracy about scope, risk, failed checks, or uncertainty.
+
 ## Phase 1 — Investigate
 
 Remain read-only: do not edit, branch, commit, or design the implementation.
@@ -59,15 +68,12 @@ Investigate with evidence:
 
 Report:
 
-- requirements
-- evidence and expected versus actual behaviour
-- code path and data trace
-- likely root cause
-- smallest possible fix in one or two sentences
-- separate improvements
-- assumptions and open questions
+- **Found:** the likely root cause and expected versus actual behaviour in one or two sentences.
+- **Evidence:** up to three bullets containing only the strongest repository or reproduction evidence.
+- **Fix:** the smallest possible fix in one or two sentences.
+- **Decision:** only material scope choices, risks, assumptions, or open questions.
 
-Do not include implementation files, commands, tests, branch names, or step sequences.
+Keep requirements, the code path, and the data trace in the working analysis, but show them only when they materially support the conclusion. Do not include implementation files, commands, tests, branch names, or step sequences.
 
 When several root causes remain plausible, give evidence for and against each without selecting one. When reproduction is blocked, separate verified code evidence from what remains unverified. When evidence contradicts the ticket, report the conflict and request direction.
 
@@ -81,15 +87,15 @@ Show scope choices only when meaningful:
 
 For every offered scope, explain its additional outcome, effort, and risk relative to Minimal so the user can choose confidently without turning the comparison into an implementation plan.
 
-When no scope choice is needed, end with: `Does this investigation look correct before I create an implementation plan?`
+When no scope choice is needed, end with: `Approve this diagnosis so I can create the plan? (yes/no)` Make clear that no files have changed.
 
-Otherwise ask whether the investigation is correct and which scope to plan.
+Otherwise recommend a scope, state the additional outcome and risk of each alternative in one line, and ask one precise choice question.
 
 ## Phase 2 — Plan
 
 Begin only after approval of the diagnosis and scope. Remain read-only.
 
-Present one concise plan covering:
+Present a plan of no more than five numbered steps. Each step must name the outcome; include files or checks only where they help the user understand the change. Cover:
 
 - required files and logic changes
 - tests to add or update
@@ -100,7 +106,7 @@ Present one concise plan covering:
 
 If planning uncovers evidence that undermines the approved diagnosis or scope, return to Phase 1.
 
-End with one question authorizing the proposed implementation. Do not implement until the user approves.
+End with: `Approve this plan so I can edit the listed files and run the checks? (yes/no)` Do not implement until the user approves.
 
 ## Phase 3 — Implement and validate
 
@@ -116,7 +122,7 @@ Follow repository documentation conventions. Explain public, complex, or non-obv
 
 For in-scope failures, diagnose and make the narrowest correction. Compare likely pre-existing failures with the base branch when safe. Never weaken a valid test to make it pass. For unavailable checks, state why, what remains unverified, and the exact command the user can run.
 
-Do not commit, push, or create the PR. In strict mode, report the implementation and validation evidence and wait for approval.
+Do not commit, push, or create the PR. In strict mode, report only what changed, check results, and material risks, then ask: `Approve these changes so I can prepare the PR preview? (yes/no)`
 
 ## Phase 4 — PR preview
 
@@ -129,20 +135,17 @@ Use the first available template:
 
 Present:
 
-- complete proposed file list and patch
+- every proposed file, grouped when helpful, with a short change summary
 - changed behaviour and acceptance-criterion coverage
-- exact passed, failed, skipped, and unavailable checks
-- self-review findings and corrections
-- remaining risks and limitations
-- diff summary and proposed commit message
-- target branch, PR title, and complete PR description
-- exact publication actions that will follow approval
+- exact passed, failed, skipped, and unavailable checks, summarized without raw output
+- material self-review findings, remaining risks, and limitations
+- diff summary, proposed commit message, target branch, PR title, and a short complete PR description
 
 Do not claim resolution while material limitations remain. Do not commit, push, or create the PR.
 
-The displayed file list and patch define the approved publication. Any material later difference requires a refreshed preview and approval.
+Do not paste the full patch by default. State that it is available on request. The current patch for the displayed file list defines the approved publication; any material later difference requires a refreshed preview and approval.
 
-End with one question asking approval to commit the displayed changes, push the branch, and create the PR.
+End with: `Approve publishing these changes? This will commit them, push the branch, and open the PR. (yes/no)`
 
 ## Phase 5 — Publish
 
@@ -157,7 +160,7 @@ Verify and record the result after each step.
 5. Inspect the resulting commit and complete patch; return to Phase 4 if hooks created a material difference.
 6. Push the feature branch without force.
 7. Create the PR using the approved title and body without silently rewriting them.
-8. Report the commit, remote branch, PR URL, commands performed, and observed CI state.
+8. Report the commit, remote branch, PR URL, and observed CI state. Include commands only for a failure or requested manual action.
 
 If tooling or permission is unavailable, report what remains incomplete and provide exact manual commands.
 
@@ -167,7 +170,7 @@ After a publication failure, inspect which side effects already succeeded. Reuse
 
 Never let this phase block, delay, or reopen the completed PR.
 
-After the PR exists, ask: `Would you like me to review what we learned and propose any durable repository documentation updates?`
+After the PR exists, ask: `Would you like a short review of reusable lessons from this work? (yes/no)`
 
 If declined, stop without creating or modifying anything.
 
@@ -175,7 +178,7 @@ Propose only knowledge that is verified by the ticket, reusable beyond it, and a
 
 Exclude chronology, conversation summaries, speculation, raw logs, one-off failures, secrets, personal data, and accurately documented facts. Prefer an existing canonical document; create a new one only when necessary.
 
-For each candidate, present its knowledge, evidence, destination, and reason. Also state what was excluded and why. End with: `Do you approve these documentation changes?`
+Present each candidate in one line: knowledge, evidence, and destination. State exclusions only when they matter. End with: `Approve these documentation changes? (yes/no)`
 
 After approval, write only the approved documentation changes in the surrounding style. Do not modify production code. Show the diff and verify that it is evidence-backed, accurate, free of sensitive data, and contains no unrelated changes.
 

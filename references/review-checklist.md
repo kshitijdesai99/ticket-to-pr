@@ -1,6 +1,6 @@
 # Self-Review Checklist
 
-Read the complete diff and check each relevant category. Report concrete findings; summarize categories with no finding instead of producing a verbose checklist transcript.
+Read the complete diff and check each relevant category. Report concrete findings only; omit categories with no finding and never show a checklist transcript.
 
 ## Requirements and correctness
 

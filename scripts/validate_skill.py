@@ -24,9 +24,16 @@ ALLOWED_FIELDS = {
 PHASE_HEADING_PATTERN = re.compile(r"## Phase ([1-6]) [-—] .+")
 REQUIRED_GATE_MARKERS = [
     "Pause at the end of Phases 1, 2, and 4",
-    "Does this investigation look correct before I create an implementation plan?",
+    "Approve this diagnosis so I can create the plan? (yes/no)",
     "Do not implement until the user approves.",
-    "End with one question asking approval to commit the displayed changes, push the branch, and create the PR.",
+    "Approve publishing these changes? This will commit them, push the branch, and open the PR. (yes/no)",
+]
+REQUIRED_COMMUNICATION_MARKERS = [
+    "## User-facing communication",
+    "Use plain, everyday language and short sentences.",
+    "Keep routine reports to five bullets or fewer.",
+    "Ask one clear question at a time.",
+    "Do not paste raw logs, full patches, or checklist transcripts unless the user asks",
 ]
 
 
@@ -156,6 +163,9 @@ def validate_structure(root: Path, fields: dict[str, str], body: str, errors: li
     for marker in REQUIRED_GATE_MARKERS:
         if marker not in structural_body:
             errors.append(f"missing approval-gate marker: {marker}")
+    for marker in REQUIRED_COMMUNICATION_MARKERS:
+        if marker not in structural_body:
+            errors.append(f"missing user-communication marker: {marker}")
 
 
 def local_reference_targets(source: Path, text: str, root: Path) -> set[Path]:

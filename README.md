@@ -10,6 +10,8 @@ The default workflow keeps three human approval gates, one for each decision tha
 
 Implementation, testing, and self-review run together without approval prompts between mechanical steps. The skill pauses again only for a blocker, a safety-sensitive command, or a material scope change.
 
+User-facing updates use plain language, at most five useful bullets, and one precise question. Logs and patches are summarized unless detail is requested or needed to show material risk.
+
 ## Workflow
 
 ```text
@@ -37,6 +39,7 @@ For teams that require more checkpoints, explicitly request `strict mode`; it ad
 ## Principles
 
 - Confirm the diagnosis with evidence before designing anything.
+- Keep user-facing reports plain and brief, and ask one precise question that states what approval permits.
 - Align on the intended result before using repository tools and clarify only when a user decision matters.
 - Use supplied code-navigation clues; otherwise announce a narrow search and continue independently.
 - Inspect repository-supplied commands before running them and request approval for commands with sensitive or external side effects.
