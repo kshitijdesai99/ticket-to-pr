@@ -27,8 +27,8 @@ Read the complete diff and check each relevant category. Report concrete finding
 
 ## Severity
 
-- **Blocker:** must be corrected before PR creation.
-- **Important:** should be corrected before PR creation unless the user accepts the risk.
+- **Blocker:** must be corrected before declaring the work complete or delivering it.
+- **Important:** should be corrected before completion or delivery unless the user accepts the risk.
 - **Minor:** optional, in-scope polish.
 
 Fix findings already covered by the approved plan, rerun affected checks, and report both the finding and correction. Pause only when a correction would materially change scope or require a user decision.

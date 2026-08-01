@@ -1,28 +1,36 @@
 ---
-name: ticket-to-pr
-description: Take an engineering ticket through evidence-first repository investigation, an approved implementation plan, implementation and verification, self-review, PR preview, publication, and optional knowledge capture. Use for an explicitly requested end-to-end ticket-to-PR workflow or when controlled approval is required before editing and publishing; do not trigger for ordinary standalone coding requests.
+name: request-to-code
+description: Handle coding requests from chat or optional tickets through evidence-first investigation, an approved plan, implementation, verification, self-review, and optional commit, push, or pull-request delivery. Use for coding changes where clear scope, concise approval gates, and safe delivery matter. A direct user request is sufficient; no ticket or pull request is required.
 ---
 
-# Ticket to PR
+# Request to Code
 
-Move a ticket to a pull request with evidence, minimal scope, and approval before decisions that are expensive to undo.
+Turn a direct request or optional ticket into verified code with minimal scope and approval before decisions that are expensive to undo.
 
 ## Workflow contract
 
-Use these phases and open each progress report with its exact heading:
+Use the applicable phases and open each progress report with its exact heading:
 
 1. Investigate — approve the diagnosis.
 2. Plan — approve implementation.
 3. Implement and validate — continue automatically unless strict mode applies.
-4. PR preview — approve publication.
-5. Publish — commit, push, and create the PR.
-6. Optional retrospective — capture durable knowledge only when requested.
+4. Delivery preview — use only when commit, push, or PR delivery was requested; approve the exact actions.
+5. Deliver — perform only the approved commit, push, or PR actions.
+6. Optional retrospective — capture durable knowledge only when explicitly requested.
 
-Pause at the end of Phases 1, 2, and 4. Also pause for blockers, safety-sensitive commands, or material scope changes. Phase 6 is opt-in.
+Pause at the end of Phases 1 and 2, and Phase 4 when it applies. Also pause for blockers, safety-sensitive commands, or material scope changes. Skip Phases 4 and 5 for local-only work. Phase 6 is opt-in and must not be offered automatically.
 
 When the user explicitly requests strict mode, announce it and also pause after Phase 3. Never infer strict mode.
 
 Treat `approved`, `continue`, `next`, `yes`, `yep`, and `ok` as approval only when they clearly answer the active gate. Re-request approval when the same message materially changes scope.
+
+## Request and delivery source
+
+- A direct chat request is sufficient. A ticket is optional.
+- Use the current user request as the primary source of intent. When a ticket or linked document is supplied, use it as supporting requirements and evidence.
+- If the request and ticket conflict, follow the latest explicit user instruction unless the user asked to follow the ticket exactly. Ask only when the conflict materially changes behaviour or scope.
+- Local changes are the default delivery outcome. Do not infer commit, push, or PR creation from a ticket, repository setup, or earlier workflow.
+- Activate Phases 4 and 5 only when the user explicitly requests one or more delivery actions. A push request includes the necessary commit; a PR request includes the necessary commit and push. Do not add any other action.
 
 ## Rules applying throughout
 
@@ -51,8 +59,8 @@ Briefly state the requested behaviour, expected result, and material assumptions
 
 Establish the baseline:
 
-- Read the ticket and relevant linked context.
-- Inspect the current and base branches, working tree, remotes, repository instructions, CI configuration, task runners, conventions, and PR templates.
+- Read the direct request first, then any supplied ticket or linked context.
+- Inspect the current and base branches, working tree, repository instructions, CI configuration, task runners, and conventions. Inspect remotes and PR templates only when relevant to the requested delivery.
 - Report and preserve pre-existing changes.
 
 Investigate with evidence:
@@ -68,20 +76,20 @@ Investigate with evidence:
 
 Report:
 
-- **Found:** the likely root cause and expected versus actual behaviour in one or two sentences.
+- **Found:** what needs to change, including the likely root cause and expected versus actual behaviour when fixing a defect.
 - **Evidence:** up to three bullets containing only the strongest repository or reproduction evidence.
-- **Fix:** the smallest possible fix in one or two sentences.
+- **Approach:** the smallest possible change in one or two sentences.
 - **Decision:** only material scope choices, risks, assumptions, or open questions.
 
 Keep requirements, the code path, and the data trace in the working analysis, but show them only when they materially support the conclusion. Do not include implementation files, commands, tests, branch names, or step sequences.
 
-When several root causes remain plausible, give evidence for and against each without selecting one. When reproduction is blocked, separate verified code evidence from what remains unverified. When evidence contradicts the ticket, report the conflict and request direction.
+When several root causes remain plausible, give evidence for and against each without selecting one. When reproduction is blocked, separate verified code evidence from what remains unverified. When repository evidence contradicts the request or an optional ticket, report the conflict and request direction only if it changes the required outcome.
 
 Ask after investigation only when the evidence exposes a product, compatibility, risk, or scope decision the repository cannot resolve. Present the options, evidence, and recommendation before requesting approval.
 
 Show scope choices only when meaningful:
 
-- **Minimal** — smallest ticket fix; default.
+- **Minimal** — smallest change satisfying the request; default.
 - **Adjacent** — closely related defects in the same path.
 - **Broader** — justified cleanup or refactoring.
 
@@ -100,7 +108,7 @@ Present a plan of no more than five numbered steps. Each step must name the outc
 - required files and logic changes
 - tests to add or update
 - validation commands, sourced first from CI, then task runners and repository documentation
-- branch name and repository conventions
+- branch name and publication conventions only when delivery requires them
 - relevant risks, compatibility, rollout, or rollback concerns
 - optional and out-of-scope work
 
@@ -112,7 +120,7 @@ End with: `Approve this plan so I can edit the listed files and run the checks? 
 
 After approval:
 
-1. Recheck the branch and working tree, then create the approved feature branch when appropriate.
+1. Recheck the branch and working tree, then create a feature branch only when approved and appropriate for the requested delivery.
 2. Implement the smallest coherent approved change and its tests.
 3. Run inspected targeted checks, then relevant broader CI checks. Record exact results.
 4. Read the complete diff and apply `references/review-checklist.md`.
@@ -122,11 +130,15 @@ Follow repository documentation conventions. Explain public, complex, or non-obv
 
 For in-scope failures, diagnose and make the narrowest correction. Compare likely pre-existing failures with the base branch when safe. Never weaken a valid test to make it pass. For unavailable checks, state why, what remains unverified, and the exact command the user can run.
 
-Do not commit, push, or create the PR. In strict mode, report only what changed, check results, and material risks, then ask: `Approve these changes so I can prepare the PR preview? (yes/no)`
+Do not commit, push, or create a PR without requested and approved delivery actions.
 
-## Phase 4 — PR preview
+For local-only work, report what changed, check results, and material risks, then stop. Do not ask whether to publish.
 
-Use the first available template:
+When delivery was requested, continue to Phase 4 after validation. In strict mode, first report what changed, check results, and material risks, then ask: `Approve these changes so I can prepare the delivery preview? (yes/no)`
+
+## Phase 4 — Delivery preview
+
+Use this phase only for requested commit, push, or PR delivery. If a PR was requested, use the first available template:
 
 1. `.github/pull_request_template.md`
 2. `.github/PULL_REQUEST_TEMPLATE/*.md`
@@ -139,42 +151,38 @@ Present:
 - changed behaviour and acceptance-criterion coverage
 - exact passed, failed, skipped, and unavailable checks, summarized without raw output
 - material self-review findings, remaining risks, and limitations
-- diff summary, proposed commit message, target branch, PR title, and a short complete PR description
+- diff summary, proposed commit message, and only the requested delivery details: target branch and remote for a push; target branch, PR title, and a short complete description for a PR
 
-Do not claim resolution while material limitations remain. Do not commit, push, or create the PR.
+Do not claim resolution while material limitations remain. Do not commit, push, or create a PR.
 
-Do not paste the full patch by default. State that it is available on request. The current patch for the displayed file list defines the approved publication; any material later difference requires a refreshed preview and approval.
+Do not paste the full patch by default. State that it is available on request. The current patch for the displayed file list defines the approved delivery; any material later difference requires a refreshed preview and approval.
 
-End with: `Approve publishing these changes? This will commit them, push the branch, and open the PR. (yes/no)`
+End with one question naming only the requested delivery actions. Example: `Approve committing these changes and opening the PR? (yes/no)`
 
-## Phase 5 — Publish
+## Phase 5 — Deliver
 
 After approval:
 
 Verify and record the result after each step.
 
-1. Reconfirm the branch, base, remote, working tree, and approved files.
+1. Reconfirm the branch, base, working tree, and approved files. Check the remote only when pushing or creating a PR.
 2. Stage only the approved patch and inspect the complete staged diff.
 3. Return to Phase 4 if the staged diff materially differs.
 4. Commit using the approved message and repository convention.
 5. Inspect the resulting commit and complete patch; return to Phase 4 if hooks created a material difference.
-6. Push the feature branch without force.
-7. Create the PR using the approved title and body without silently rewriting them.
-8. Report the commit, remote branch, PR URL, and observed CI state. Include commands only for a failure or requested manual action.
+6. Push the feature branch without force only when requested.
+7. Create the PR using the approved title and body without silently rewriting them only when requested.
+8. Report only the results that apply: commit, remote branch, PR URL, and observed CI state. Include commands only for a failure or requested manual action.
 
 If tooling or permission is unavailable, report what remains incomplete and provide exact manual commands.
 
-After a publication failure, inspect which side effects already succeeded. Reuse matching commits, branches, and PRs and resume from the first incomplete step; never create duplicates.
+After a delivery failure, inspect which side effects already succeeded. Reuse matching commits, branches, and PRs and resume from the first incomplete step; never create duplicates.
 
 ## Phase 6 — Optional retrospective
 
-Never let this phase block, delay, or reopen the completed PR.
+Never let this phase block, delay, or reopen completed work. Run it only when the user explicitly asks; do not offer it automatically.
 
-After the PR exists, ask: `Would you like a short review of reusable lessons from this work? (yes/no)`
-
-If declined, stop without creating or modifying anything.
-
-Propose only knowledge that is verified by the ticket, reusable beyond it, and appropriate for version control—for example, canonical ownership, a non-obvious data flow, a correct test command, a repository convention, or a recurring integration constraint.
+Propose only knowledge verified by the request, repository evidence, or optional ticket; reusable beyond the task; and appropriate for version control—for example, canonical ownership, a non-obvious data flow, a correct test command, a repository convention, or a recurring integration constraint.
 
 Exclude chronology, conversation summaries, speculation, raw logs, one-off failures, secrets, personal data, and accurately documented facts. Prefer an existing canonical document; create a new one only when necessary.
 

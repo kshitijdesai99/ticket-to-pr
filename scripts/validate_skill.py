@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the ticket-to-pr skill without third-party dependencies."""
+"""Validate the request-to-code skill without third-party dependencies."""
 
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ from pathlib import Path
 
 
 NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+EXPECTED_SKILL_NAME = "request-to-code"
 TOP_LEVEL_FIELD_PATTERN = re.compile(r"^([A-Za-z0-9_-]+):(?:[ \t]*(.*))?$")
 MARKDOWN_LINK_PATTERN = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 SKILL_PATH_PATTERN = re.compile(r"`((?:references|scripts|assets)/[^`\s]+)`")
@@ -23,10 +24,15 @@ ALLOWED_FIELDS = {
 }
 PHASE_HEADING_PATTERN = re.compile(r"## Phase ([1-6]) [-—] .+")
 REQUIRED_GATE_MARKERS = [
-    "Pause at the end of Phases 1, 2, and 4",
+    "Pause at the end of Phases 1 and 2, and Phase 4 when it applies.",
     "Approve this diagnosis so I can create the plan? (yes/no)",
     "Do not implement until the user approves.",
-    "Approve publishing these changes? This will commit them, push the branch, and open the PR. (yes/no)",
+    "End with one question naming only the requested delivery actions.",
+]
+REQUIRED_REQUEST_MARKERS = [
+    "A direct chat request is sufficient. A ticket is optional.",
+    "Local changes are the default delivery outcome.",
+    "Do not infer commit, push, or PR creation from a ticket",
 ]
 REQUIRED_COMMUNICATION_MARKERS = [
     "## User-facing communication",
@@ -145,8 +151,8 @@ def validate_structure(root: Path, fields: dict[str, str], body: str, errors: li
         errors.append("name must use lowercase letters, numbers, and single hyphens")
     if len(name) > 64:
         errors.append("name must not exceed 64 characters")
-    if name and name != root.name:
-        errors.append(f"name {name!r} must match parent directory {root.name!r}")
+    if name and name != EXPECTED_SKILL_NAME:
+        errors.append(f"name must be {EXPECTED_SKILL_NAME!r}; found {name!r}")
     if not description:
         errors.append("description must not be empty")
     if len(description) > 1024:
@@ -163,6 +169,9 @@ def validate_structure(root: Path, fields: dict[str, str], body: str, errors: li
     for marker in REQUIRED_GATE_MARKERS:
         if marker not in structural_body:
             errors.append(f"missing approval-gate marker: {marker}")
+    for marker in REQUIRED_REQUEST_MARKERS:
+        if marker not in structural_body:
+            errors.append(f"missing request-source marker: {marker}")
     for marker in REQUIRED_COMMUNICATION_MARKERS:
         if marker not in structural_body:
             errors.append(f"missing user-communication marker: {marker}")

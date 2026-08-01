@@ -19,9 +19,6 @@ Explain the verified change and why it was needed.
 
 - Risk, limitation, skipped check, or `None identified`
 
-## Ticket
-
-Closes: TICKET-ID
 ```
 
-Add rollout, rollback, migration, or screenshots only when relevant. Distinguish passed, failed, skipped, and unavailable checks; never list a check that was not run as passing.
+Add a closing issue reference, rollout, rollback, migration, or screenshots only when relevant. Distinguish passed, failed, skipped, and unavailable checks; never list a check that was not run as passing.
