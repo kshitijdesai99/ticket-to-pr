@@ -111,6 +111,8 @@ Present a plan of no more than five numbered steps. Each step must name the outc
 - relevant risks, compatibility, rollout, or rollback concerns
 - optional and out-of-scope work
 
+Order the steps so the riskiest load-bearing piece runs end to end first, and place polish, documentation, and broader test coverage in later steps. A working core proves the approach before effort goes into what surrounds it.
+
 If planning uncovers evidence that undermines the approved diagnosis or scope, return to Phase 1.
 
 End with: `Approve this plan so I can edit the listed files and run the checks? (yes/no)` Do not implement until the user approves.
