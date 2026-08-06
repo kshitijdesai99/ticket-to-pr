@@ -4,7 +4,7 @@ Read the complete diff and check each relevant category. Report concrete finding
 
 ## Requirements and correctness
 
-- Does the change satisfy every acceptance criterion without expanding scope?
+- Does the change satisfy every acceptance criterion?
 - Are edge cases, error paths, state transitions, concurrency, and backward compatibility handled where relevant?
 
 ## Security, privacy, data, and infrastructure
@@ -20,9 +20,7 @@ Read the complete diff and check each relevant category. Report concrete finding
 
 ## Tests and maintainability
 
-- Do tests verify observable behaviour, including regression and failure cases?
-- Does documentation follow repository conventions and explain public, complex, or non-obvious behaviour without redundant inline examples?
-- Does the code follow repository conventions and avoid dead code, misleading comments, unrelated cleanup, and needless complexity?
+- Does the change follow the implementation principles in `SKILL.md`?
 - Is user-facing or developer documentation required?
 
 ## Severity
