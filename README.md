@@ -39,19 +39,11 @@ For teams that require more checkpoints, explicitly request `strict mode`; it ad
 
 ## Principles
 
-- Confirm the diagnosis with evidence before designing anything.
-- Keep user-facing reports plain and brief, and ask one precise question that states what approval permits.
-- Align on the intended result before using repository tools and clarify only when a user decision matters.
-- Use supplied code-navigation clues; otherwise announce a narrow search and continue independently.
-- Inspect repository-supplied commands before running them and request approval for commands with sensitive or external side effects.
+- Confirm the diagnosis with evidence before designing anything, and keep changes inside the approved scope.
+- Never claim an unrun check passed, and never commit, push, or create a PR unless it was requested and approved.
 - Preserve pre-existing work and repository conventions.
-- Keep changes within the approved scope.
-- Follow repository documentation conventions and explain public, complex, or non-obvious behaviour without adding redundant comments.
-- Never claim an unrun check passed.
-- Bind delivery to the approved file list and patch, and re-approve material drift.
-- Never commit, push, or create a PR unless requested and approved.
-- Never merge or force-push unless separately requested.
-- Never write documentation from a retrospective without approval.
+
+`SKILL.md` is the single source of truth for the full rules; coding standards live in `references/implementation-principles.md`.
 
 ## Structure
 
@@ -60,8 +52,9 @@ request-to-code/
 ├── .github/workflows/validate-skill.yml
 ├── SKILL.md
 ├── references/
-│   ├── review-checklist.md
-│   └── pr-template.md
+│   ├── implementation-principles.md
+│   ├── pr-template.md
+│   └── review-checklist.md
 └── scripts/
     └── validate_skill.py
 ```

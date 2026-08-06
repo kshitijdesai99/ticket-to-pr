@@ -20,7 +20,7 @@ Read the complete diff and check each relevant category. Report concrete finding
 
 ## Tests and maintainability
 
-- Does the change follow the implementation principles in `SKILL.md`?
+- Does the change follow `references/implementation-principles.md`?
 - Is user-facing or developer documentation required?
 
 ## Severity

@@ -23,23 +23,27 @@ ALLOWED_FIELDS = {
     "allowed-tools",
 }
 PHASE_HEADING_PATTERN = re.compile(r"## Phase ([1-6]) [-—] .+")
+
+# Markers are deliberately short and behavioural: they assert that a rule is still
+# present without pinning the surrounding wording, so prose can be edited freely.
 REQUIRED_GATE_MARKERS = [
-    "Pause at the end of Phases 1 and 2, and Phase 4 when it applies.",
-    "Approve this diagnosis so I can create the plan? (yes/no)",
-    "Do not implement until the user approves.",
-    "End with one question naming only the requested delivery actions.",
+    "Pause at the end of Phases 1 and 2",
+    "Approve this diagnosis",
+    "Do not implement until the user approves",
+    "naming only the requested delivery actions",
 ]
 REQUIRED_REQUEST_MARKERS = [
-    "A direct chat request is sufficient. A ticket is optional.",
-    "Local changes are the default delivery outcome.",
-    "Do not infer commit, push, or PR creation from a ticket",
+    "A direct chat request is sufficient",
+    "A ticket is optional",
+    "Local changes are the default delivery outcome",
+    "Do not infer commit, push, or PR creation",
 ]
 REQUIRED_COMMUNICATION_MARKERS = [
     "## User-facing communication",
-    "Use plain, everyday language and short sentences.",
-    "Keep routine reports to five bullets or fewer.",
-    "Ask one clear question at a time.",
-    "Do not paste raw logs, full patches, or checklist transcripts unless the user asks",
+    "plain, everyday language",
+    "five bullets or fewer",
+    "Ask one clear question at a time",
+    "Do not paste raw logs",
 ]
 
 
@@ -142,7 +146,7 @@ def content_outside_fences(body: str) -> str:
     return "\n".join(output)
 
 
-def validate_structure(root: Path, fields: dict[str, str], body: str, errors: list[str]) -> None:
+def validate_structure(fields: dict[str, str], body: str, errors: list[str]) -> None:
     """Validate metadata limits and the six-phase approval workflow."""
     name = fields.get("name", "")
     description = fields.get("description", "")
@@ -223,7 +227,7 @@ def validate(root: Path) -> list[str]:
         return [f"SKILL.md not found under {root}"]
 
     fields, body = parse_skill(skill_file, errors)
-    validate_structure(root, fields, body, errors)
+    validate_structure(fields, body, errors)
     validate_references(root, errors)
     return errors
 

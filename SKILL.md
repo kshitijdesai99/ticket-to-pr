@@ -7,20 +7,9 @@ description: Handle coding requests from chat or optional tickets through eviden
 
 Turn a direct request or optional ticket into verified code with approval before decisions that are expensive to undo.
 
-## Implementation principles
-
-- Write the smallest complete solution that precisely satisfies the request. Prioritize correctness over brevity, follow existing project conventions, preserve existing behaviour, and avoid unrelated refactors, dependencies, compatibility paths, or future-proofing.
-- Make ownership boundaries explicit. Each file and function should make clear what it owns, exposes, depends on, and deliberately does not own. Give each file one responsibility, keep related behaviour together, prefer shallow project structures and descriptive filenames, and avoid vague shared modules such as `utils` unless the code is genuinely general-purpose.
-- Follow existing repository configuration conventions when they are coherent and safe. When they are absent, inconsistent, unsafe, or the user explicitly requests this pattern, keep secrets in environment variables and non-secret settings in the owning module's configuration file. Have each module load and validate its own configuration behind a clear boundary.
-- Give each function one clearly describable job at one level of abstraction. Prefer explicit data flow, predictable return types, early returns, and straightforward control flow. Avoid hidden state, deeply nested logic, dense expressions, and boolean parameters that substantially change behaviour.
-- Optimize for reading rather than minimum line count. Use intermediate variables and whitespace when they reveal meaning. Introduce an abstraction only when it represents a real concept, isolates meaningful complexity, or removes substantial duplication. Use clear names and small interfaces.
-- Make failures explicit rather than hiding errors or invalid states.
-- Begin each code file with a short plain-language purpose comment. For important files, also summarize the main entry points, non-obvious dependencies, and side effects. Give public functions, classes, and non-obvious internal logic a plain-language docstring with a concrete usage or input-to-output example. Explain visible behaviour rather than restating names, and keep all other comments minimal.
-- When behaviour changes, add or update focused tests for observable behaviour, critical success and failure paths, boundaries, and regressions. Avoid duplicate tests, framework tests, and unnecessary coupling to implementation details. Parameterize variations of the same rule, keep setup small, mock only external boundaries, and run the relevant checks.
-
 ## Workflow contract
 
-Use the applicable phases and open each progress report with its exact heading:
+Use the applicable phases. Open each progress report with that phase's `## Phase N — Title` heading, copied exactly from its section below:
 
 1. Investigate — approve the diagnosis.
 2. Plan — approve implementation.
@@ -131,7 +120,7 @@ End with: `Approve this plan so I can edit the listed files and run the checks? 
 After approval:
 
 1. Recheck the branch and working tree, then create a feature branch only when approved and appropriate for the requested delivery.
-2. Apply the approved plan.
+2. Read `references/implementation-principles.md` and apply the approved plan.
 3. Run inspected targeted checks, then relevant broader CI checks. Record exact results.
 4. Read the complete diff and apply `references/review-checklist.md`.
 5. Correct in-scope findings and rerun affected checks.
