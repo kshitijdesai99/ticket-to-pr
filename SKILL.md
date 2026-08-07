@@ -1,11 +1,15 @@
 ---
 name: request-to-code
-description: Handle coding requests from chat or optional tickets through evidence-first investigation, an approved plan, implementation, verification, self-review, and optional commit, push, or pull-request delivery. Use for coding changes where clear scope, concise approval gates, and safe delivery matter. A direct user request is sufficient; no ticket or pull request is required.
+description: Explicitly-invoked workflow that turns a coding request into a verified change through evidence-first investigation, an approved plan, implementation, verification, self-review, and optional commit, push, or pull-request delivery. Use ONLY when the user names this skill in their message, for example by writing use request-to-code or the slash command. Never trigger it for an ordinary coding request, question, or follow-up message, and never re-invoke it while it is already running.
 ---
 
 # Request to Code
 
 Turn a direct request or optional ticket into verified code with approval before decisions that are expensive to undo.
+
+## Activation
+
+Load this skill once, when the user names it. It then stays active for the whole task. Every later message in that task — an approval, an answer, a correction, a follow-up request — is handled by continuing from the current phase. Do not load or restart this skill again, and do not announce it again, unless the user names it for a genuinely new task.
 
 ## Workflow contract
 

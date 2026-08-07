@@ -77,6 +77,8 @@ Restart the agent session after installation.
 
 ## Usage
 
+The skill never starts on its own. Name it in your message, and it stays active for the rest of that task.
+
 ```text
 Use request-to-code to add input validation to the signup endpoint.
 ```
