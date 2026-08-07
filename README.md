@@ -43,7 +43,7 @@ For teams that require more checkpoints, explicitly request `strict mode`; it ad
 - Never claim an unrun check passed, and never commit, push, or create a PR unless it was requested and approved.
 - Preserve pre-existing work and repository conventions.
 
-`SKILL.md` is the single source of truth for the full rules; coding standards live in `references/implementation-principles.md`.
+`SKILL.md` is the single source of truth: workflow, coding standards, self-review checklist, and fallback PR template all live in that one file.
 
 ## Structure
 
@@ -51,10 +51,6 @@ For teams that require more checkpoints, explicitly request `strict mode`; it ad
 request-to-code/
 ├── .github/workflows/validate-skill.yml
 ├── SKILL.md
-├── references/
-│   ├── implementation-principles.md
-│   ├── pr-template.md
-│   └── review-checklist.md
 └── scripts/
     └── validate_skill.py
 ```

@@ -122,9 +122,9 @@ End with: `Approve this plan so I can edit the listed files and run the checks? 
 After approval:
 
 1. Recheck the branch and working tree, then create a feature branch only when approved and appropriate for the requested delivery.
-2. Read `references/implementation-principles.md` and apply the approved plan.
+2. Apply the approved plan, following the implementation principles at the end of this file.
 3. Run inspected targeted checks, then relevant broader CI checks. Record exact results.
-4. Read the complete diff and apply `references/review-checklist.md`.
+4. Read the complete diff and apply the self-review checklist at the end of this file.
 5. Correct in-scope findings and rerun affected checks.
 
 For in-scope failures, diagnose and correct them. Compare likely pre-existing failures with the base branch when safe. Never weaken a valid test to make it pass. For unavailable checks, state why, what remains unverified, and the exact command the user can run.
@@ -142,7 +142,7 @@ Use this phase only for requested commit, push, or PR delivery. If a PR was requ
 1. `.github/pull_request_template.md`
 2. `.github/PULL_REQUEST_TEMPLATE/*.md`
 3. `docs/pull_request_template.md`
-4. `references/pr-template.md`
+4. the fallback PR template at the end of this file
 
 Present:
 
@@ -190,3 +190,73 @@ Present each candidate in one line: knowledge, evidence, and destination. State 
 After approval, write only the approved documentation changes in the surrounding style. Do not modify production code. Show the diff and verify that it is evidence-backed, accurate, free of sensitive data, and contains no unrelated changes.
 
 Do not commit retrospective changes silently. Ask whether to leave them as a local diff or publish them through a separate documentation-only PR.
+
+## Implementation principles
+
+Apply these while writing code in Phase 3, and check the diff against them during self-review.
+
+- Write the smallest complete solution that precisely satisfies the request. Prioritize correctness over brevity, follow existing project conventions, preserve existing behaviour, and avoid unrelated refactors, dependencies, compatibility paths, or future-proofing.
+- Make ownership boundaries explicit. Each file and function should make clear what it owns, exposes, depends on, and deliberately does not own. Give each file one responsibility, keep related behaviour together, prefer shallow project structures and descriptive filenames, and avoid vague shared modules such as `utils` unless the code is genuinely general-purpose.
+- Follow existing repository configuration conventions when they are coherent and safe. When they are absent, inconsistent, unsafe, or the user explicitly requests this pattern, keep secrets in environment variables and non-secret settings in the owning module's configuration file. Have each module load and validate its own configuration behind a clear boundary.
+- Give each function one clearly describable job at one level of abstraction. Prefer explicit data flow, predictable return types, early returns, and straightforward control flow. Avoid hidden state, deeply nested logic, dense expressions, and boolean parameters that substantially change behaviour.
+- Optimize for reading rather than minimum line count. Use intermediate variables and whitespace when they reveal meaning. Introduce an abstraction only when it represents a real concept, isolates meaningful complexity, or removes substantial duplication. Use clear names and small interfaces.
+- Make failures explicit rather than hiding errors or invalid states.
+- Begin each code file with a short plain-language purpose comment. For important files, also summarize the main entry points, non-obvious dependencies, and side effects. Give public functions, classes, and non-obvious internal logic a plain-language docstring with a concrete usage or input-to-output example. Explain visible behaviour rather than restating names, and keep all other comments minimal.
+- When behaviour changes, add or update focused tests for observable behaviour, critical success and failure paths, boundaries, and regressions. Avoid duplicate tests, framework tests, and unnecessary coupling to implementation details. Parameterize variations of the same rule, keep setup small, mock only external boundaries, and run the relevant checks.
+
+## Self-review checklist
+
+Read the complete diff and check each relevant category. Report concrete findings only; omit categories with no finding and never show a checklist transcript.
+
+Requirements and correctness:
+
+- Does the change satisfy every acceptance criterion?
+- Are edge cases, error paths, state transitions, concurrency, and backward compatibility handled where relevant?
+
+Security, privacy, data, and infrastructure:
+
+- Are inputs, authentication, authorization, secrets, and sensitive data handled safely?
+- Were repository scripts and documented commands inspected before execution?
+- Did any command use credentials, deploy or migrate data, modify an external system, incur cost, or perform a destructive operation without explicit approval?
+- Are migrations, configuration, deployment, rollback, or external-service changes required?
+
+Performance and reliability:
+
+- Does the change add unnecessary queries, calls, blocking work, memory growth, latency, retries, or failure modes?
+
+Tests and maintainability:
+
+- Does the change follow the implementation principles above?
+- Is user-facing or developer documentation required?
+
+Rate each finding by severity:
+
+- **Blocker:** must be corrected before declaring the work complete or delivering it.
+- **Important:** should be corrected before completion or delivery unless the user accepts the risk.
+- **Minor:** optional, in-scope polish.
+
+Fix findings already covered by the approved plan, rerun affected checks, and report both the finding and correction. Pause only when a correction would materially change scope or require a user decision.
+
+## Fallback PR template
+
+Use this only when the repository has no PR template.
+
+```markdown
+## Summary
+
+Explain the verified change and why it was needed.
+
+## Changes
+
+- Concrete change
+
+## Verification
+
+- `command` — actual result
+
+## Risks and limitations
+
+- Risk, limitation, skipped check, or `None identified`
+```
+
+Add a closing issue reference, rollout, rollback, migration, or screenshots only when relevant. Distinguish passed, failed, skipped, and unavailable checks; never list a check that was not run as passing.

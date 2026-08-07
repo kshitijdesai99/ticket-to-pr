@@ -13,7 +13,7 @@ NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 EXPECTED_SKILL_NAME = "request-to-code"
 TOP_LEVEL_FIELD_PATTERN = re.compile(r"^([A-Za-z0-9_-]+):(?:[ \t]*(.*))?$")
 MARKDOWN_LINK_PATTERN = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
-SKILL_PATH_PATTERN = re.compile(r"`((?:references|scripts|assets)/[^`\s]+)`")
+SKILL_PATH_PATTERN = re.compile(r"`((?:scripts|assets)/[^`\s]+)`")
 ALLOWED_FIELDS = {
     "name",
     "description",
@@ -200,7 +200,6 @@ def local_reference_targets(source: Path, text: str, root: Path) -> set[Path]:
 def validate_references(root: Path, errors: list[str]) -> None:
     """Ensure local files referenced by skill Markdown exist inside the repository."""
     markdown_files = [root / "SKILL.md", root / "README.md"]
-    markdown_files.extend(sorted((root / "references").glob("*.md")))
     for source in markdown_files:
         if not source.is_file():
             continue
