@@ -43,7 +43,7 @@ Treat `approved`, `continue`, `next`, `yes`, `yep`, and `ok` as approval only wh
 
 ## User-facing communication
 
-- Use plain, everyday language and short sentences. Explain any necessary technical term in one line.
+- Use plain, everyday language and short sentences, pitched so a smart beginner follows it on the first read. Explain any necessary technical term in one line.
 - Lead with the result or decision needed. Present analysis as conclusions and strongest evidence, not a reasoning transcript.
 - Keep routine reports to five bullets or fewer. Exceed this only when omission would hide a material risk, blocker, or scope change.
 - Show only what the user needs to understand or decide. Do not paste raw logs, full patches, or checklist transcripts unless the user asks; summarize them and make details available on request.
@@ -187,7 +187,7 @@ Exclude chronology, conversation summaries, speculation, raw logs, one-off failu
 
 Present each candidate in one line: knowledge, evidence, and destination. State exclusions only when they matter. End with: `Approve these documentation changes? (yes/no)`
 
-After approval, write only the approved documentation changes in the surrounding style. Do not modify production code. Show the diff and verify that it is evidence-backed, accurate, free of sensitive data, and contains no unrelated changes.
+After approval, write only the approved documentation changes in the surrounding style, in the same plain beginner-readable language required elsewhere. Do not modify production code. Show the diff and verify that it is evidence-backed, accurate, free of sensitive data, and contains no unrelated changes.
 
 Do not commit retrospective changes silently. Ask whether to leave them as a local diff or publish them through a separate documentation-only PR.
 
@@ -201,7 +201,7 @@ Apply these while writing code in Phase 3, and check the diff against them durin
 - Give each function one clearly describable job at one level of abstraction. Prefer explicit data flow, predictable return types, early returns, and straightforward control flow. Avoid hidden state, deeply nested logic, dense expressions, and boolean parameters that substantially change behaviour.
 - Optimize for reading rather than minimum line count. Use intermediate variables and whitespace when they reveal meaning. Introduce an abstraction only when it represents a real concept, isolates meaningful complexity, or removes substantial duplication. Use clear names and small interfaces.
 - Make failures explicit rather than hiding errors or invalid states.
-- Begin each code file with a short plain-language purpose comment. For important files, also summarize the main entry points, non-obvious dependencies, and side effects. Give public functions, classes, and non-obvious internal logic a plain-language docstring with a concrete usage or input-to-output example. Explain visible behaviour rather than restating names, and keep all other comments minimal.
+- Write every comment, docstring, and document so a smart beginner understands it on the first read: short sentences, everyday words, and any unavoidable jargon explained in the same breath. Begin each code file with a short purpose comment. For important files, also summarize the main entry points, non-obvious dependencies, and side effects. Give public functions, classes, and non-obvious internal logic a docstring with a concrete usage or input-to-output example. Explain visible behaviour rather than restating names, and keep all other comments minimal.
 - When behaviour changes, add or update focused tests for observable behaviour, critical success and failure paths, boundaries, and regressions. Avoid duplicate tests, framework tests, and unnecessary coupling to implementation details. Parameterize variations of the same rule, keep setup small, mock only external boundaries, and run the relevant checks.
 
 ## Self-review checklist
